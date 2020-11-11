@@ -15,10 +15,10 @@ class process:
         model = tf.keras.models.load_model('cnn.model')
 
         prediction = model.predict([preper(image)])
-        print(np.argmax(prediction[0][0]))
+        print(np.argmax(prediction[0]))
         print(prediction)
         print(max(prediction[0]))
         self.letter = CATEGORIES[int(np.argmax(prediction[0]))]
 
     def get_letter(self):
-        return self.letter,
+        return self.letter

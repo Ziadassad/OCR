@@ -24,10 +24,7 @@ class training_data:
         train_labels = pickle.load(pickle_in)
 
         train_images = np.array(train_images).reshape(-1, 28, 28, 1)
-        # x = x.reshape(192, 28, 28, 1)
         train_labels = np.array(train_labels)
-
-        # y = to_categorical(y)
 
         train_images = train_images / 255
 

@@ -5,11 +5,14 @@ import tensorflow as tf
 from load_training_data import *
 from training_data import *
 from process import *
+from histogram_word_detection import *
 from tkinter import *
 import tkinter as tk
 from PIL import Image, ImageDraw
+from matplotlib import pyplot as plt
 
 
+# print("Num GPUs Available: ", len(tf.config.experimental.list_physical_devices('GPU')))
 
 # a = load_training_data()
 # a.load_image()
@@ -108,9 +111,9 @@ CATEGORIES = ["ز", "د", "م"]
 image = cv2.imread('D:\\OCR\\train-data\\Z\\z4.png',  cv2.IMREAD_GRAYSCALE)
 image2 = cv2.imread('D:\\OCR\\train-data\\Y\\y3.png',  cv2.IMREAD_GRAYSCALE)
 image3 = cv2.imread('D:\\OCR\\train-data\\M\\m27.png',  cv2.IMREAD_GRAYSCALE)
-image4 = cv2.imread('D:\\OCR\\train-data\\D\\d13.png',  cv2.IMREAD_GRAYSCALE)
+image4 = cv2.imread('D:\\OCR\\train-data\\D\\d40.png',  cv2.IMREAD_GRAYSCALE)
 
-image5 = cv2.imread('D:\\OCR\\train-data\\test\\test4.png',  cv2.IMREAD_GRAYSCALE)
+image5 = cv2.imread('D:\\OCR\\train-data\\test\\strTest2.png',  cv2.IMREAD_GRAYSCALE)
 
 mnist = tf.keras.datasets.mnist
 (train_images, train_labels), (test_images, test_labels) = mnist.load_data()
@@ -121,22 +124,30 @@ test_images = test_images.reshape(10000, 28, 28, 1)
 train_images, test_images = train_images / 255, test_images / 255
 
 
+ret, thresh = cv2.threshold(image5, 0, 255, cv2.THRESH_BINARY_INV)
 
-pro = process(image)
+# pro = process(thresh)
+#
+# print(pro.get_letter())
 
-print(pro.get_letter())
+im = image5
+
+cv2.imshow("th", thresh)
+
+detect_word = histogram_word_detection(thresh)
+detect_word.Horizontal_histogram()
+detect_word.Vertical_histogram()
 
 
+
+
+# plt.imshow(mask, cmap=plt.gray())
+# plt.show()
 
 
 
 # cv2.imshow('image', thresh)
-
 cv2.waitKey(0)
-
-
-
-
 
 
 
