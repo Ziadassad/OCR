@@ -19,7 +19,7 @@ from matplotlib import pyplot as plt
 #
 # training_data()
 
-model = tf.keras.models.load_model('cnn.model')
+# model = tf.keras.models.load_model('cnn.model')
 
 # window = Tk()
 # window.title("OCR Kurdish")
@@ -113,7 +113,8 @@ image2 = cv2.imread('D:\\OCR\\train-data\\Y\\y3.png',  cv2.IMREAD_GRAYSCALE)
 image3 = cv2.imread('D:\\OCR\\train-data\\M\\m27.png',  cv2.IMREAD_GRAYSCALE)
 image4 = cv2.imread('D:\\OCR\\train-data\\D\\d40.png',  cv2.IMREAD_GRAYSCALE)
 
-image5 = cv2.imread('D:\\OCR\\train-data\\test\\strTest2.png',  cv2.IMREAD_GRAYSCALE)
+# image5 = cv2.imread('D:\\OCR\\train-data\\test\\strTest3.png',  cv2.IMREAD_GRAYSCALE)
+image5 = cv2.imread('D:\\OCR\\train-data\\test\\kurdistan.png',  cv2.IMREAD_GRAYSCALE)
 
 mnist = tf.keras.datasets.mnist
 (train_images, train_labels), (test_images, test_labels) = mnist.load_data()
@@ -135,10 +136,15 @@ im = image5
 cv2.imshow("th", thresh)
 
 detect_word = histogram_word_detection(thresh)
-detect_word.Horizontal_histogram()
-detect_word.Vertical_histogram()
+horizontal = detect_word.Horizontal_histogram(thresh)
+point, imageV = detect_word.Vertical_histogram(horizontal)
 
+word_images = detect_word.getImageOfWords(point, imageV)
 
+process(word_images[0])
+
+# for img in word_images:
+#     process(img)
 
 
 # plt.imshow(mask, cmap=plt.gray())
@@ -146,7 +152,7 @@ detect_word.Vertical_histogram()
 
 
 
-# cv2.imshow('image', thresh)
+# cv2.imshow('image', word_images[0])
 cv2.waitKey(0)
 
 
