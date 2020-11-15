@@ -6,9 +6,9 @@ import numpy as np
 class load_training_data:
     def __init__(self):
         self.list = []
-        self.DATADIR = 'D:\\OCR\\train-data'
+        self.DATADIR = './train-data'
         # self.CATEGORIES = ["Z", "Y", "M", "S", "D", "A", "Aa", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
-        self.CATEGORIES = ["Z", "D", "M"]
+        self.CATEGORIES = ["Z", "D", "M", "K", "R", "W"]
 
     def load_image(self):
         i = 0

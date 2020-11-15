@@ -19,7 +19,7 @@ from matplotlib import pyplot as plt
 #
 # training_data()
 
-# model = tf.keras.models.load_model('cnn.model')
+model = tf.keras.models.load_model('cnn.model')
 
 # window = Tk()
 # window.title("OCR Kurdish")
@@ -105,33 +105,24 @@ from matplotlib import pyplot as plt
 # CATEGORIES = ["ز", "ی", "م", "س", "د", "ا", "آ", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"]
 # CATEGORIES = ["Z", "Y", "S", "D", "A", "Aa", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
 
-CATEGORIES = ["ز", "د", "م"]
+CATEGORIES = ["ز", "د", "م", "ک", "ر", "و"]
 
 
 image = cv2.imread('D:\\OCR\\train-data\\Z\\z4.png',  cv2.IMREAD_GRAYSCALE)
 image2 = cv2.imread('D:\\OCR\\train-data\\Y\\y3.png',  cv2.IMREAD_GRAYSCALE)
-image3 = cv2.imread('D:\\OCR\\train-data\\M\\m27.png',  cv2.IMREAD_GRAYSCALE)
+image3 = cv2.imread('D:\\OCR\\train-data\\K\\k_67.png',  cv2.IMREAD_GRAYSCALE)
 image4 = cv2.imread('D:\\OCR\\train-data\\D\\d40.png',  cv2.IMREAD_GRAYSCALE)
 
-# image5 = cv2.imread('D:\\OCR\\train-data\\test\\strTest3.png',  cv2.IMREAD_GRAYSCALE)
-image5 = cv2.imread('D:\\OCR\\train-data\\test\\kurdistan.png',  cv2.IMREAD_GRAYSCALE)
-
-mnist = tf.keras.datasets.mnist
-(train_images, train_labels), (test_images, test_labels) = mnist.load_data()
-
-# reshape and rescale data for the CNN
-train_images = train_images.reshape(-1, 28, 28, 1)
-test_images = test_images.reshape(10000, 28, 28, 1)
-train_images, test_images = train_images / 255, test_images / 255
+image5 = cv2.imread('D:\\OCR\\train-data\\test\\test4.png',  cv2.IMREAD_GRAYSCALE)
+image6 = cv2.imread('D:\\OCR\\train-data\\test\\kurdistan.png',  cv2.IMREAD_GRAYSCALE)
 
 
 ret, thresh = cv2.threshold(image5, 0, 255, cv2.THRESH_BINARY_INV)
 
-# pro = process(thresh)
-#
-# print(pro.get_letter())
 
 im = image5
+
+im = cv2.resize(im, (500, 500))
 
 cv2.imshow("th", thresh)
 
@@ -141,10 +132,24 @@ point, imageV = detect_word.Vertical_histogram(horizontal)
 
 word_images = detect_word.getImageOfWords(point, imageV)
 
-process(word_images[0])
+p = process(word_images[0])
+p.get_letter()
 
-# for img in word_images:
-#     process(img)
+
+# def preper(image, i):
+#     # cv2.imshow('e', image)
+#     # ret, thresh = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV)
+#     im = np.array(image)
+#     new = cv2.resize(im, (28, 28))
+#     cv2.imshow(str(i), new)
+#     return new.reshape(-1, 28, 28, 1)
+#
+#
+# prediction = model.predict([preper(image5, 1)])
+# print(np.argmax(prediction[0]))
+# print(prediction)
+# print(max(prediction[0]))
+# print(CATEGORIES[int(np.argmax(prediction[0]))])
 
 
 # plt.imshow(mask, cmap=plt.gray())

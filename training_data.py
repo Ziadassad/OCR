@@ -16,7 +16,8 @@ from PIL import Image, ImageDraw
 class training_data:
     def __init__(self):
         # CATEGORIES = ["Z", "Y", "S", "D", "A", "Aa", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
-        CATEGORIES = ["Z", "D"]
+        CATEGORIES = ["Z", "D", "M", "K", "R", "W"]
+
         pickle_in = open("x.pickle", "rb")
         train_images = pickle.load(pickle_in)
 
@@ -59,7 +60,7 @@ class training_data:
             train_images,
             train_labels,
             batch_size=128,
-            epochs=1,
+            epochs=50,
             verbose=1,
             # validation_data=(t, test_labels),
             callbacks=[],
