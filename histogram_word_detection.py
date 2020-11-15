@@ -80,6 +80,7 @@ class histogram_word_detection:
         return point, image
 
 
+
         # print(point)
         # distance = 0
         # newPoint = []
