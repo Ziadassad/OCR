@@ -19,7 +19,7 @@ from matplotlib import pyplot as plt
 #
 # training_data()
 
-model = tf.keras.models.load_model('cnn.model')
+# model = tf.keras.models.load_model('cnn.model')
 
 # window = Tk()
 # window.title("OCR Kurdish")
@@ -108,13 +108,13 @@ model = tf.keras.models.load_model('cnn.model')
 CATEGORIES = ["ز", "د", "م", "ک", "ر", "و"]
 
 
-image = cv2.imread('D:\\OCR\\train-data\\Z\\z4.png',  cv2.IMREAD_GRAYSCALE)
-image2 = cv2.imread('D:\\OCR\\train-data\\Y\\y3.png',  cv2.IMREAD_GRAYSCALE)
-image3 = cv2.imread('D:\\OCR\\train-data\\K\\k_67.png',  cv2.IMREAD_GRAYSCALE)
-image4 = cv2.imread('D:\\OCR\\train-data\\D\\d40.png',  cv2.IMREAD_GRAYSCALE)
+image = cv2.imread('train-data\\Z\\z4.png',  cv2.IMREAD_GRAYSCALE)
+image2 = cv2.imread('train-data\\Y\\y3.png',  cv2.IMREAD_GRAYSCALE)
+image3 = cv2.imread('train-data\\K\\k_67.png',  cv2.IMREAD_GRAYSCALE)
+image4 = cv2.imread('train-data\\D\\d40.png',  cv2.IMREAD_GRAYSCALE)
 
-image5 = cv2.imread('D:\\OCR\\train-data\\test\\test4.png',  cv2.IMREAD_GRAYSCALE)
-image6 = cv2.imread('D:\\OCR\\train-data\\test\\kurdistan.png',  cv2.IMREAD_GRAYSCALE)
+image5 = cv2.imread('train-data\\test\\test4.png',  cv2.IMREAD_GRAYSCALE)
+image6 = cv2.imread('train-data\\test\\kurdistan.png',  cv2.IMREAD_GRAYSCALE)
 
 
 ret, thresh = cv2.threshold(image5, 0, 255, cv2.THRESH_BINARY_INV)
