@@ -16,7 +16,7 @@ from PIL import Image, ImageDraw
 class training_data:
     def __init__(self):
         # CATEGORIES = ["Z", "Y", "S", "D", "A", "Aa", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
-        CATEGORIES = ["Z", "D", "M", "K", "R", "W"]
+        CATEGORIES = ["A", "Z", "D", "K", "R", "W", "N", "T"]
 
         pickle_in = open("x.pickle", "rb")
         train_images = pickle.load(pickle_in)
@@ -72,36 +72,3 @@ class training_data:
         # print("test score:", model.evaluate(test_images, test_labels, batch_size=128))
 
         model.save('cnn.model')
-
-        # model = Sequential()
-        #
-        # model.add(Conv2D(64, (3, 3), input_shape=x.shape[1:]))
-        # model.add(Activation('relu'))
-        # model.add(MaxPooling2D(pool_size=(2, 2)))
-        #
-        # model.add(Conv2D(64, (3, 3)))
-        # model.add(Activation('relu'))
-        # model.add(MaxPooling2D(pool_size=(2, 2)))
-        #
-        # model.add(Flatten())  # this converts our 3D feature maps to 1D feature vectors
-        #
-        # model.add(Dense(64))
-        #
-        # model.add(Dense(1))
-        # model.add(Activation('sigmoid'))
-        #
-        # print(len(CATEGORIES))
-        #
-        # model.compile(loss='binary_crossentropy',
-        #               optimizer='adam',
-        #               metrics=['accuracy'])
-        #
-        # model.fit(x, y, batch_size=32, epochs=2, validation_split=0.9)
-        #
-        # model.save('cnn.model')
-
-        # model.compile(
-        #     optimizer="rmsprop",
-        #     loss="sparse_categorical_crossentropy")
-        # model2.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
-        # model.save('cnn.model2')

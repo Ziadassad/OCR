@@ -2,6 +2,7 @@ import cv2
 from load_training_data import *
 from training_data import *
 from histogram_word_detection import *
+from scann import *
 
 class process:
     def __init__(self, image):
@@ -19,9 +20,9 @@ class process:
 
 
     def get_letter(self):
-        CATEGORIES = ["ز", "د", "م", "ک", "ر", "و", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"]
+        CATEGORIES = ["ا", "ز", "د", "ک", "ر", "و", "ن", "ت", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"]
         word = []
-        print(len(self.words))
+        # print(len(self.words))
         i = 0
         for im in self.words:
             im = 255 - im
@@ -43,8 +44,12 @@ class process:
 
         model = tf.keras.models.load_model('cnn.model')
 
-        print(len(word))
+        # print(len(word))
         letter = ""
+        #
+        # sc = scann()
+        # sc.scann_image(word[-1])
+
         for w in word:
             p = preper(w, i)
             prediction = model.predict([p])

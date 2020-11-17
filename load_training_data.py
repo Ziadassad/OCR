@@ -8,7 +8,7 @@ class load_training_data:
         self.list = []
         self.DATADIR = './train-data'
         # self.CATEGORIES = ["Z", "Y", "M", "S", "D", "A", "Aa", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
-        self.CATEGORIES = ["Z", "D", "M", "K", "R", "W"]
+        self.CATEGORIES = ["A", "Z", "D", "K", "R", "W", "N", "T"]
 
     def load_image(self):
         i = 0
