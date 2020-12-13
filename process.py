@@ -2,15 +2,17 @@ import cv2
 from load_training_data import *
 from training_data import *
 from histogram_word_detection import *
-from scann import *
+
 
 class process:
+
     def __init__(self, image):
+        self.CATEGORIES = ["ا", "د", "ک", "ر", "و", "ن", "ت", "س", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"]
         self.image = image
         self.words = []
         # cv2.imshow('d', image)
         ret, thresh = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV)
-        detect_word = histogram_word_detection(thresh)
+        detect_word = histogram_word_detection(thresh, "letter")
         point, images = detect_word.Vertical_histogram(thresh)
 
         for p1, p2 in point:
@@ -19,16 +21,35 @@ class process:
             # cv2.imshow(str(p1), image[:, p1:p2])
 
 
+    def predict(self, p):
+        model = tf.keras.models.load_model('cnn.model')
+        prediction = model.predict([p])
+        # print(np.argmax(prediction[0]))
+        # print(prediction)
+        # print(max(prediction[0]))
+        # print(CATEGORIES[int(np.argmax(prediction[0]))])
+        letter = self.CATEGORIES[int(np.argmax(prediction[0]))]
+        # print(letter)
+        return letter
+
+
+    def scan(self, word):
+        img = []
+        # print(int(word.shape[1]/2))
+        img.append(word[:, 0:int(word.shape[1]/2)])
+        img.append(word[:, int(word.shape[1]/2):])
+        cv2.imshow("show", img[0])
+        cv2.imshow("show2", img[1])
+
     def get_letter(self):
-        CATEGORIES = ["ا", "ز", "د", "ک", "ر", "و", "ن", "ت", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"]
         word = []
         # print(len(self.words))
-        i = 0
+
         for im in self.words:
             im = 255 - im
             # cv2.imshow(str(i), im)
             # print(im)
-            detect_word = histogram_word_detection(im)
+            detect_word = histogram_word_detection(im, "letter")
             im = detect_word.Horizontal_histogram(im)
             word.append(im)
             # cv2.imshow(str(i), im)
@@ -36,36 +57,27 @@ class process:
 
         def preper(image, i):
             # cv2.imshow('e', image)
-            ret, thresh = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV)
-            im = np.array(thresh)
-            new = cv2.resize(im, (28, 28))
+            image = np.array(image)
+            new = cv2.resize(image, (28, 28))
             cv2.imshow(str(i), new)
+            # return new
             return new.reshape(-1, 28, 28, 1)
 
         model = tf.keras.models.load_model('cnn.model')
 
         # print(len(word))
         letter = ""
-        #
-        # sc = scann()
-        # sc.scann_image(word[-1])
-
+        i = 0
         for w in word:
-            p = preper(w, i)
-            prediction = model.predict([p])
-            # print(np.argmax(prediction[0]))
-            # print(prediction)
-            # print(max(prediction[0]))
-            # print(CATEGORIES[int(np.argmax(prediction[0]))])
-            letter = letter + CATEGORIES[int(np.argmax(prediction[0]))]
+            ret, image = cv2.threshold(w, 0, 255, cv2.THRESH_BINARY_INV)
+            # cv2.imshow(str(i), image)
+            # print(w.shape)
+            # if w.shape[1] > 60:
+            #     pass
+            #     # self.scan(image)
+            # else:
+            p = preper(image, i)
+            letter = letter + self.predict(p)
             i += 1
 
-        print(letter[::-1])
-        # cv2.imshow('e', p)
-        # prediction = model.predict([preper(word[4], 1)])
-        # print(np.argmax(prediction[0]))
-        # print(prediction)
-        # print(max(prediction[0]))
-        # print(CATEGORIES[int(np.argmax(prediction[0]))])
-        # self.letter = CATEGORIES[int(np.argmax(prediction[0]))]
-        # return self.letter
+        print(letter[::-1], end=" ")

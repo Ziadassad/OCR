@@ -19,10 +19,8 @@ from matplotlib import pyplot as plt
 #
 # training_data()
 
-# model = tf.keras.models.load_model('cnn.model')
-
-
-CATEGORIES = ["ز", "د", "م", "ک", "ر", "و"]
+CATEGORIES = ["A", "D", "KL", "R", "W", "N", "TL", "SL"]
+# CATEGORIES = ["ا", "د", "ک", "ر", "و", "ن", "ت"]
 
 
 image = cv2.imread('train-data\\Z\\z4.png',  cv2.IMREAD_GRAYSCALE)
@@ -33,70 +31,101 @@ image4 = cv2.imread('train-data\\D\\d40.png',  cv2.IMREAD_GRAYSCALE)
 image5 = cv2.imread('train-data\\test\\test4.png',  cv2.IMREAD_GRAYSCALE)
 image6 = cv2.imread('train-data\\test\\kurdistan.png',  cv2.IMREAD_GRAYSCALE)
 
-
 ret, thresh = cv2.threshold(image5, 0, 255, cv2.THRESH_BINARY_INV)
 
 
-im = image5
+im = image
 
 im = cv2.resize(im, (500, 500))
 
-cv2.imshow("th", thresh)
+cv2.imshow("th", image5)
 
-detect_word = histogram_word_detection(thresh)
+detect_word = histogram_word_detection(thresh, "word")
 horizontal = detect_word.Horizontal_histogram(thresh)
-point, imageV = detect_word.Vertical_histogram(horizontal)
+point, imageV = detect_word.Vertical_histogram(horizontal[0])
 
 word_images = detect_word.getImageOfWords(point, imageV)
 
+
 for im in reversed(word_images):
-    # print("i")
     p = process(im)
+    # print(im.shape)
     p.get_letter()
 
 # p = process(word_images[0])
 # p.get_letter()
 
 
-
-# def preper(image, i):
-#     # cv2.imshow('e', image)
-#     # ret, thresh = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV)
-#     im = np.array(image)
-#     new = cv2.resize(im, (28, 28))
-#     cv2.imshow(str(i), new)
-#     return new.reshape(-1, 28, 28, 1)
+# def nothing(x):
+#     pass
 #
+# cv2.namedWindow("Tracking")
+# cv2.createTrackbar("LH", "Tracking", 0, 255, nothing)
+# cv2.createTrackbar("LS", "Tracking", 0, 255, nothing)
+# cv2.createTrackbar("LV", "Tracking", 0, 255, nothing)
+# cv2.createTrackbar("UH", "Tracking", 255, 255, nothing)
+# cv2.createTrackbar("US", "Tracking", 255, 255, nothing)
+# cv2.createTrackbar("UV", "Tracking", 255, 255, nothing)
 #
-# prediction = model.predict([preper(image5, 1)])
-# print(np.argmax(prediction[0]))
-# print(prediction)
-# print(max(prediction[0]))
-# print(CATEGORIES[int(np.argmax(prediction[0]))])
+# model = tf.keras.models.load_model('cnn.model')
+# def prepro(img):
+#     # img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+#     img = cv2.equalizeHist(img)
+#     img = img/255
+#     return img
+#
+# cap = cv2.VideoCapture(0)
+#
+# while True:
+#     _, frame = cap.read()
+#     frame = np.array(frame)
+#     # cv2.imshow("org", frame)
+#     # img = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+#     # cv2.imshow("gray", img)
+#     # ret, img = cv2.threshold(img, 120, 205, cv2.THRESH_BINARY_INV)
+#     # cv2.imshow("thrsh", img)
+#     # img = cv2.resize(img, (28, 28))
+#     # img = prepro(img)
+#
+#     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+#
+#     l_h = cv2.getTrackbarPos("LH", "Tracking")
+#     l_s = cv2.getTrackbarPos("LS", "Tracking")
+#     l_v = cv2.getTrackbarPos("LV", "Tracking")
+#
+#     u_h = cv2.getTrackbarPos("UH", "Tracking")
+#     u_s = cv2.getTrackbarPos("US", "Tracking")
+#     u_v = cv2.getTrackbarPos("UV", "Tracking")
+#
+#     l_b = np.array([l_h, l_s, l_v])
+#     u_b = np.array([u_h, u_s, u_v])
+#
+#     mask = cv2.inRange(hsv, l_b, u_b)
+#
+#     res = cv2.bitwise_and(frame, frame, mask=mask)
+#
+#     # cv2.imshow("frame", frame)
+#     cv2.imshow("mask", mask)
+#     cv2.imshow("res", res)
+#
+#     img = cv2.resize(mask, (28, 28))
+#     img = prepro(img)
+#     img = img.reshape(-1, 28, 28, 1)
+#     # clas = int(model.predict_classes(img))
+#     predict = model.predict(img)
+#     val = np.amax(predict)
+#     let = CATEGORIES[int(np.argmax(predict[0]))]
+#     print(let, ' ', val)
+#     # print(clas, ' ', val)
+#
+#     cv2.putText(frame, let + "  %" + str(val), (50, 50), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 255), 1)
+#     cv2.imshow("org", frame)
+#     cv2.waitKey(1)
+#     if cv2.waitKey(1) & 0xFF == ord('q'):
+#         break
 
-
-# plt.imshow(mask, cmap=plt.gray())
-# plt.show()
 
 
 
 # cv2.imshow('image', word_images[0])
 cv2.waitKey(0)
-
-
-
-
-
-# CATEGORIES = [ "D", "M", "A",  "1", "2", "3", "4", "5", "6", "7", "8", "9"]
-# dir = 'D:\\OCR\\train-data'
-#
-#
-# for category in CATEGORIES:
-#     print(category)
-#     i = 0
-#     path = os.path.join(dir, category)
-#     for img in os.listdir(path):
-#         gray = cv2.imread(os.path.join(path, img), cv2.IMREAD_GRAYSCALE)
-#         ret, thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV)
-#         cv2.imwrite(f"D:\\OCR\\train-data\\{category}1\\{category+str(i)}.png", thresh)
-#         i += 1

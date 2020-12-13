@@ -3,17 +3,23 @@ import cv2
 
 class histogram_word_detection:
 
-    def __init__(self, orginal_image):
+    def __init__(self, orginal_image, flag):
         self.h1 = 0
         self.h2 = 0
-        image = cv2.resize(orginal_image, (500, 500))
-        self.imageOrg = image
+        self.flag = flag
+        if flag == "word":
+            self.orginal_image = cv2.resize(orginal_image, (500, 500))
+        self.imageOrg = orginal_image
         # bo wargrtne point wordakan
         self.point_image = []
 
     def Horizontal_histogram(self, image):
 
-        image = cv2.resize(image, (500, 500))
+        if self.flag == "word":
+            image = cv2.resize(image, (500, 500))
+        else:
+            image = cv2.resize(image, (500, image.shape[0]))
+            # print(image.shape[0])
         im = image
         im = 255 - im
 
@@ -29,21 +35,70 @@ class histogram_word_detection:
         for row in range(im.shape[0]):
            cv2.line(horizontal, (0, row), (int(proj[row]*w/m), row), (255, 255, 255), 1)
 
-        s = []
+        rowSentence = []
+        store = []
+
+        # bo dyare krdne hamw row yakan
+        if self.flag != "word":
+            for i in range(0, h):
+                if horizontal[i, 20] > 200:
+                    # print(i)
+                    store.append(i)
+            # cv2.imshow("letter", self.imageOrg[min(store):max(store), :])
+            return self.imageOrg[min(store):max(store), :]
+
 
         for i in range(0, h):
-            if horizontal[i, 20] > 200:
-                # print(i)
-                s.append(i)
+            # print(i)
+            if horizontal[i, 20] > 220:
+                store.append(i)
+                if horizontal[i+1, 20] < 20:
+                    rowSentence.append([min(store), max(store)])
+                    store.clear()
 
-        # print(min(s), '  ', max(s))
+        print(rowSentence)
+        c = 0
 
-        cv2.line(im, (0, min(s)), (w, min(s)), color=(0, 0, 255), thickness=2)
-        cv2.line(im, (0, max(s)), (w, max(s)), color=(0, 0, 255), thickness=2)
+        # bo dyare krdne sentence
+        sentence = []
+
+        for h1, h2 in rowSentence:
+            if len(rowSentence)-1 != c:
+                start = rowSentence[c + 1][0]
+                end = rowSentence[c + 1][1]
+                distance = start - h2
+
+                if distance < 30:
+                    print(distance)
+                    sentence.append([h1, end])
+                else:
+                    if c == 0:
+                        sentence.append([h1, h2])
+                    else:
+                        end = max(sentence)
+                        if end[1] < h1:
+                            sentence.append([h1, h2])
+                c += 1
+            else:
+                if c == 0:
+                    sentence.append([h1, h2])
+                else:
+                    end = max(sentence)
+                    if end[1] < h1:
+                        sentence.append([h1, h2])
+
+        print(sentence)
+
+        imsent = []  # bo save krdne aw sentence nay boman darchwa
+        for h1, h2 in sentence:
+            # cv2.line(image, (0, h1), (w, h1), color=(0, 255, 255), thickness=2)
+            # cv2.line(image, (0, h2), (w, h2), color=(0, 255, 255), thickness=2)
+            imsent.append(self.orginal_image[h1:h2, :])
+
         cv2.imshow('result', horizontal)
-        self.h1, self.h2 = min(s), max(s)
-        # cv2.imshow('re', image[self.h1: self.h2])
-        return self.imageOrg[self.h1: self.h2]
+        # self.h1, self.h2 = min(store), max(store)
+        cv2.imshow('re', image)
+        return imsent
 
     def Vertical_histogram(self, image):
         # im1 = image[self.h1: self.h2, :]
@@ -64,9 +119,9 @@ class histogram_word_detection:
 
         point = []
         for i in range(0, w):
-            if vertical[10, i] > 200:
+            if vertical[60, i] > 200:
                 store.append(i)
-                if vertical[10, i+1] < 10:
+                if vertical[60, i+1] < 10:
                     point.append([min(store), max(store)])
                     store.clear()
 
