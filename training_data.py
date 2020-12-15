@@ -64,7 +64,7 @@ class training_data:
             train_images,
             train_labels,
             batch_size=128,
-            epochs=10,
+            epochs=20,
             verbose=1,
             validation_data=(train_images, train_labels),
             shuffle=1,

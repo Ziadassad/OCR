@@ -25,27 +25,33 @@ CATEGORIES = ["A", "D", "KL", "R", "W", "N", "TL", "SL"]
 
 image = cv2.imread('train-data\\Z\\z4.png',  cv2.IMREAD_GRAYSCALE)
 image2 = cv2.imread('train-data\\Y\\y3.png',  cv2.IMREAD_GRAYSCALE)
-image3 = cv2.imread('train-data\\K\\k_67.png',  cv2.IMREAD_GRAYSCALE)
-image4 = cv2.imread('train-data\\D\\d40.png',  cv2.IMREAD_GRAYSCALE)
+# image3 = cv2.imread('train-data\\D\\_67.png',  cv2.IMREAD_GRAYSCALE)
+image4 = cv2.imread('train-data\\Ztest\\C1.PNG',  cv2.IMREAD_GRAYSCALE)
 
-image5 = cv2.imread('train-data\\test\\test4.png',  cv2.IMREAD_GRAYSCALE)
-image6 = cv2.imread('train-data\\test\\kurdistan.png',  cv2.IMREAD_GRAYSCALE)
+image5 = cv2.imread('train-data\\Ztest\\test4.png',  cv2.IMREAD_GRAYSCALE)
+image6 = cv2.imread('train-data\\Ztest\\kurdistan.png',  cv2.IMREAD_GRAYSCALE)
 
-ret, thresh = cv2.threshold(image5, 0, 255, cv2.THRESH_BINARY_INV)
+# re, t = cv2.threshold(image6, 127, 255, cv2.THRESH_BINARY_INV)
+# cv2.imwrite("C:\\Users\\ZiadPro\\Desktop\\pycharm\\OCR\\train-data\\test\\kurdistan2.png", t)
+# tr
+
+ret, thresh = cv2.threshold(image6, 127, 255, cv2.THRESH_BINARY_INV)
 
 
-im = image
+im = thresh
 
 im = cv2.resize(im, (500, 500))
 
-cv2.imshow("th", image5)
+cv2.imshow("th", im)
 
-detect_word = histogram_word_detection(thresh, "word")
+detect_word = histogram_word_detection(im, "word")
 horizontal = detect_word.Horizontal_histogram(thresh)
-point, imageV = detect_word.Vertical_histogram(horizontal[0])
 
+point, imageV = detect_word.Vertical_histogram(horizontal[0])
 word_images = detect_word.getImageOfWords(point, imageV)
 
+# cv2.imshow("rr2", horizontal[0])
+# cv2.imshow("rrr", word_images[0])
 
 for im in reversed(word_images):
     p = process(im)

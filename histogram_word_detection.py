@@ -9,45 +9,47 @@ class histogram_word_detection:
         self.flag = flag
         if flag == "word":
             self.orginal_image = cv2.resize(orginal_image, (500, 500))
-        self.imageOrg = orginal_image
+        self.orginal = orginal_image
         # bo wargrtne point wordakan
         self.point_image = []
 
     def Horizontal_histogram(self, image):
+        h, w = image.shape
 
         if self.flag == "word":
             image = cv2.resize(image, (500, 500))
+            im = image
+            im = 255 - im
         else:
-            image = cv2.resize(image, (500, image.shape[0]))
-            # print(image.shape[0])
-        im = image
-        im = 255 - im
+            im = cv2.resize(image, (w, h))
 
+        h, w = im.shape
         # Calculate horizontal projection
         proj = np.sum(im, 1)
         m = np.max(proj)
-
-        horizontal = np.zeros((image.shape[0], image.shape[1]))
+        horizontal = np.zeros((h, w))
+        # print(horizontal.shape[0], horizontal.shape[1])
 
         h, w = horizontal.shape
 
         # Draw a line for each row
-        for row in range(im.shape[0]):
-           cv2.line(horizontal, (0, row), (int(proj[row]*w/m), row), (255, 255, 255), 1)
+        for row in range(h):
+           cv2.line(horizontal, (0, row), (int(proj[row]*h/m), row), (255, 255, 255), 1)
 
         rowSentence = []
         store = []
 
-        # bo dyare krdne hamw row yakan
-        if self.flag != "word":
+
+        # bo garandmawae full size e letter
+        if self.flag == "letter":
+            # cv2.imshow(str(horizontal.shape[1]), horizontal)
             for i in range(0, h):
-                if horizontal[i, 20] > 200:
-                    # print(i)
+                if horizontal[i, 5] > 200:
                     store.append(i)
-            # cv2.imshow("letter", self.imageOrg[min(store):max(store), :])
-            return self.imageOrg[min(store):max(store), :]
+            return self.orginal[min(store):max(store), :]
 
 
+        # bo dyare krdne hamw row yakan
         for i in range(0, h):
             # print(i)
             if horizontal[i, 20] > 220:
@@ -91,8 +93,8 @@ class histogram_word_detection:
 
         imsent = []  # bo save krdne aw sentence nay boman darchwa
         for h1, h2 in sentence:
-            # cv2.line(image, (0, h1), (w, h1), color=(0, 255, 255), thickness=2)
-            # cv2.line(image, (0, h2), (w, h2), color=(0, 255, 255), thickness=2)
+            cv2.line(image, (0, h1), (w, h1), color=(0, 255, 255), thickness=2)
+            cv2.line(image, (0, h2), (w, h2), color=(0, 255, 255), thickness=2)
             imsent.append(self.orginal_image[h1:h2, :])
 
         cv2.imshow('result', horizontal)
@@ -118,12 +120,16 @@ class histogram_word_detection:
         store = []
 
         point = []
-        for i in range(0, w):
-            if vertical[60, i] > 200:
+        for i in range(0, w-1):
+            if vertical[20, i] > 200:
                 store.append(i)
-                if vertical[60, i+1] < 10:
+                if vertical[20, i+1] < 10:
                     point.append([min(store), max(store)])
                     store.clear()
+
+        # if self.flag != "word":
+        #     cv2.imshow('ty', image[min(point):max(point)])
+        #     # return image[min(point):max(point)]
 
         # for img in point:
         #     cv2.line(image, (min(img), 0), (min(img), h), color=(255, 255, 255), thickness=1)
