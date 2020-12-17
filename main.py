@@ -67,8 +67,8 @@ for im in reversed(word_images):
 # p.get_letter()
 
 
-def nothing(x):
-    pass
+# def nothing(x):
+#     pass
 #
 # cv2.namedWindow("Tracking")
 # cv2.createTrackbar("LH", "Tracking", 0, 255, nothing)
