@@ -44,6 +44,7 @@ im = cv2.resize(im, (500, 500))
 
 cv2.imshow("th", im)
 
+
 detect_word = histogram_word_detection(im, "word")
 horizontal = detect_word.Horizontal_histogram(thresh)
 
