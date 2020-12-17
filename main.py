@@ -1,4 +1,4 @@
-import os
+
 import numpy as np
 import cv2
 import tensorflow as tf
@@ -29,13 +29,13 @@ image2 = cv2.imread('train-data\\Y\\y3.png',  cv2.IMREAD_GRAYSCALE)
 image4 = cv2.imread('train-data\\Ztest\\C1.PNG',  cv2.IMREAD_GRAYSCALE)
 
 image5 = cv2.imread('train-data\\Ztest\\test4.png',  cv2.IMREAD_GRAYSCALE)
-image6 = cv2.imread('train-data\\Ztest\\kurdistan.png',  cv2.IMREAD_GRAYSCALE)
+image6 = cv2.imread('train-data\\Ztest\\kurdistan2.png',  cv2.IMREAD_GRAYSCALE)
 
 # re, t = cv2.threshold(image6, 127, 255, cv2.THRESH_BINARY_INV)
 # cv2.imwrite("C:\\Users\\ZiadPro\\Desktop\\pycharm\\OCR\\train-data\\test\\kurdistan2.png", t)
 # tr
 
-ret, thresh = cv2.threshold(image6, 127, 255, cv2.THRESH_BINARY_INV)
+ret, thresh = cv2.threshold(image5, 127, 255, cv2.THRESH_BINARY_INV)
 
 
 im = thresh
@@ -53,10 +53,14 @@ word_images = detect_word.getImageOfWords(point, imageV)
 # cv2.imshow("rr2", horizontal[0])
 # cv2.imshow("rrr", word_images[0])
 
+i = 0
 for im in reversed(word_images):
+    # im = cv2.resize(im, (500, 500))
     p = process(im)
     # print(im.shape)
+    # cv2.imshow(str(i), im)
     p.get_letter()
+    # i += 1
 
 # p = process(word_images[0])
 # p.get_letter()
