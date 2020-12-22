@@ -35,7 +35,7 @@ image6 = cv2.imread('train-data\\Ztest\\kurdistan2.png',  cv2.IMREAD_GRAYSCALE)
 # cv2.imwrite("C:\\Users\\ZiadPro\\Desktop\\pycharm\\OCR\\train-data\\test\\kurdistan2.png", t)
 # tr
 
-ret, thresh = cv2.threshold(image5, 127, 255, cv2.THRESH_BINARY_INV)
+ret, thresh = cv2.threshold(image6, 127, 255, cv2.THRESH_BINARY_INV)
 
 
 im = thresh
@@ -46,6 +46,7 @@ cv2.imshow("th", im)
 
 
 detect_word = histogram_word_detection(im, "word")
+# detect_word.sparse_letter(im)
 horizontal = detect_word.Horizontal_histogram(thresh)
 
 point, imageV = detect_word.Vertical_histogram(horizontal[0])
@@ -67,8 +68,8 @@ for im in reversed(word_images):
 # p.get_letter()
 
 
-def nothing(x):
-    pass
+# def nothing(x):
+#     pass
 #
 # cv2.namedWindow("Tracking")
 # cv2.createTrackbar("LH", "Tracking", 0, 255, nothing)

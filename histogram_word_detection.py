@@ -1,5 +1,7 @@
 import numpy as np
 import cv2
+from PIL import ImageFilter
+
 
 class histogram_word_detection:
 
@@ -211,3 +213,57 @@ class histogram_word_detection:
             images.append(img)
 
         return images
+
+    def sparse_letter(self, image):
+        # ret, image = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV)
+        mser = cv2.MSER_create()
+        vis = image.copy()
+        regions, _ = mser.detectRegions(image)
+        hulls = [cv2.convexHull(p.reshape(-1, 1, 2)) for p in regions]
+        cv2.polylines(vis, hulls, 1, (0, 255, 0))
+
+        mask = np.zeros((image.shape[0], image.shape[1], 1), dtype=np.uint8)
+        mask = cv2.dilate(mask, np.ones((150, 150), np.uint8))
+        for contour in hulls:
+            cv2.drawContours(mask, [contour], -1, (255, 255, 255), -1)
+
+            text_only = cv2.bitwise_and(image, image, mask=mask)
+
+        cv2.imshow('img', vis)
+
+        cv2.imshow('mask', mask)
+
+        cv2.imshow('text', text_only)
+
+
+    def circle_pad(self, img, xc, yc, r):
+        # mg = np.mgrid[:img.shape[0], 0:img.shape[1]]
+        # yi, xi = mg[0, :, :], mg[1, :, :]
+        #
+        # mask = ((yi - yc) ** 2 + (xi - xc) ** 2) < r ** 2
+        #
+        # d = np.sqrt((yi - yc) ** 2 + (xi - xc) ** 2)
+        # d = np.clip(d, r, None)
+        # ye = yc + (yi - yc) * (r / d)
+        # xe = xc + (xi - xc) * (r / d)
+        #
+        # ye = np.clip(ye.astype(int), 0, img.shape[0])
+        # xe = np.clip(xe.astype(int), 0, img.shape[1])
+        #
+        # img_out = img * mask + img[ye, xe] * (~mask)
+        # cv2.imshow('maskw', img_out)
+        # th, im_th = cv2.threshold(im, 220, 255, cv2.THRESH_BINARY_INV);
+        # Copy the thresholded image.
+        im_floodfill = img.copy()
+        # Notice the size needs to be 2 pixels than the image.
+        h, w = img.shape[:2]
+        mask = np.zeros((h + 2, w + 2), np.uint8)
+        cv2.floodFill(im_floodfill, mask, (0, 0), 255)
+        im_floodfill_inv = cv2.bitwise_not(im_floodfill)
+        im_out = img | im_floodfill_inv
+        cv2.imshow("Thresholded Image", img)
+        cv2.imshow("Floodfilled Image", im_floodfill)
+        cv2.imshow("Inverted Floodfilled Image", im_floodfill_inv)
+        cv2.imshow("Foreground", im_out)
+
+        # return img_out

@@ -2,6 +2,7 @@ import cv2
 from load_training_data import *
 from training_data import *
 from histogram_word_detection import *
+from PIL import Image, ImageFilter
 
 
 class process:
@@ -12,8 +13,8 @@ class process:
         self.words = []
         # cv2.imshow('d', image)
         ret, thresh = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV)
-        detect_word = histogram_word_detection(thresh, "letter")
-        point, images = detect_word.Vertical_histogram(thresh)
+        self.detect_word = histogram_word_detection(thresh, "letter")
+        point, images = self.detect_word.Vertical_histogram(thresh)
 
         for p1, p2 in point:
             # print(p1)
@@ -83,7 +84,7 @@ class process:
         for p1, p2 in point:
             images.append(image[:, p1:p2])
             # cv2.imshow(str(p1), )
-        cv2.imshow(str(p1), images[0])
+        # cv2.imshow(str(p1), images[0])
 
     def get_letter(self):
 
@@ -99,15 +100,16 @@ class process:
         i = 0
         for w in self.word:
             ret, image = cv2.threshold(w, 0, 255, cv2.THRESH_BINARY)
-            # print(w.shape)
+            print(w.shape)
             # cv2.imshow(str(i), image)
             # print(w.shape)
-            # if w.shape[1] > 125:
-            #     pass
-            #     self.scan(image)
+            if w.shape[1] > 115:
+                # self.detect_word.sparse_letter(image)
+                self.detect_word.circle_pad(image, 35, 50, 120)
+
             # else:
-            p = preper(image, i)
-            letter = letter + self.predict(p)
-            i += 1
+            #     p = preper(image, i)
+            # # letter = letter + self.predict(p)
+            # i += 1
 
         print(letter[::-1], end=" ")
