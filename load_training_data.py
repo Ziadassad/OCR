@@ -2,28 +2,41 @@ import os
 import cv2
 import pickle
 import numpy as np
+import matplotlib.pyplot as plot
 
 class load_training_data:
     def __init__(self):
         self.list = []
         self.DATADIR = './train-data'
         # self.CATEGORIES = ["Z", "Y", "M", "S", "D", "A", "Aa", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
-        self.CATEGORIES = ["A", "D", "KL", "R", "W", "N", "TL", "SL"]
+        # self.CATEGORIES = ["A", "D", "KL", "R", "W", "N", "TL", "SL"]
+
+        self.CATEGORIES = ["A", "AL", "AC", "B", "D", "KS", "R", "RR", "W", "WW", "N", "TS", "S", "CH", "F", "G",
+         "H", "C", "L", "LL", "M", "O", "P", "Q", "S", "sh", "U", "UU", "V", "X", "XX", "Y", "YY", "Z", "ZH"]
+
+        # self.CATEGORIES = ["A", "AL", "AC", "B", "D", "KS", "R", "RR", "W"]
+
 
     def load_image(self):
-        i = 0
+
+        fig = plot.figure()
+
+        i = 1
         list_data = self.list.copy()
         dir = self.DATADIR
         catog = self.CATEGORIES
         for category in catog:
-            print(category)
+            # print(category)
             class_name = catog.index(category)
-            print(class_name)
+            # print(class_name)
             path = os.path.join(dir, category)
+            # length = os.listdir(path)
+            # print(len(length))
             for img in os.listdir(path):
                 gray = cv2.imread(os.path.join(path, img), cv2.IMREAD_GRAYSCALE)
                 new_image = cv2.resize(gray, (28, 28))
                 list_data.append([np.array(new_image), np.array(class_name)])
+        # plot.show()
 
         x_image = []
         y_label = []

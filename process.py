@@ -8,7 +8,13 @@ from PIL import Image, ImageFilter
 class process:
 
     def __init__(self, image):
-        self.CATEGORIES = ["ا", "د", "ک", "ر", "و", "ن", "ت", "س", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"]
+        # "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"
+        # ["A", "AL", "AC", "B", "D", "KL", "R", "RR", "W", "WW", "N", "TS", "TL", "SL", "CH", "F", "G",
+        #  "H", "C", "L", "LL", "M", "O", "P", "Q", "S", "SL", "sh", "U", "UU", "V", "X", "XX", "Y", "YY",
+        #  "Z", "ZH"]
+        self.CATEGORIES = ["ا", "ئ", "ە", "ب", "د", "ك", "ر", "ڕ", "و", "وو", "ن", "ت", "س", "چ", "ف", "گ",
+                           "ه", "ج", "ل", "ڵ" "م", "ۆ", "پ", "ق", "س", "ش", "ح", "ع", "ڤ", "خ", "غ", "ی", "ێ", "ز", "ژ"]
+        # self.CATEGORIES = ["ا", "د", "ک", "ر", "و", "ن", "ت", "س"]
         self.image = image
         self.words = []
         # cv2.imshow('d', image)
@@ -31,43 +37,14 @@ class process:
             # i += 1
 
 
-    model = tf.keras.models.load_model('cnn.model')
+    # model = tf.keras.models.load_model('cnn.model')
 
     def predict(self, p):
         model = tf.keras.models.load_model('cnn.model')
         prediction = model.predict([p])
-        # print(np.argmax(prediction[0]))
-        # print(prediction)
-        # print(max(prediction[0]))
-        # print(CATEGORIES[int(np.argmax(prediction[0]))])
         letter = self.CATEGORIES[int(np.argmax(prediction[0]))]
-        # print(letter)
+        print(letter)
         return letter
-
-    #
-    #
-
-    def findLettercon(self):
-        self.imletter = []
-
-        # print(len(self.word))
-
-        i = 0
-        word = self.word
-        for w in word:
-            print(w.shape[1])
-            wi = w.shape[1]
-
-            if i < len(word)-1:
-                m = max([wi, word[i+1].shape[1]])
-                width = abs(wi - word[i+1].shape[1])
-                # if
-                # print(width)
-            # print(i)
-            i += 1
-            # for j in range(i+1, len(self.word)-1):
-            #     width = abs(wi - self.word[j].shape[1])
-            #     print(width)
 
 
     #
@@ -103,13 +80,9 @@ class process:
             print(w.shape)
             # cv2.imshow(str(i), image)
             # print(w.shape)
-            if w.shape[1] > 115:
-                # self.detect_word.sparse_letter(image)
-                self.detect_word.circle_pad(image, 35, 50, 120)
 
-            # else:
-            #     p = preper(image, i)
-            # # letter = letter + self.predict(p)
-            # i += 1
+            p = preper(image, i)
+            letter = letter + self.predict(p)
+            i += 1
 
         print(letter[::-1], end=" ")

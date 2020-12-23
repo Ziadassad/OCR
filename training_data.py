@@ -16,7 +16,11 @@ from PIL import Image, ImageDraw
 class training_data:
     def __init__(self):
         # CATEGORIES = ["Z", "Y", "S", "D", "A", "Aa", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
-        CATEGORIES = ["A", "D", "KL", "R", "W", "N", "TL", "SL"]
+        # CATEGORIES = ["A", "D", "KL", "R", "W", "N", "TL", "SL"]
+
+        # self.CATEGORIES = ["A", "AL", "AC", "B", "D", "KS", "R", "RR", "W", "WW", "N", "TS", "S", "CH", "F", "G",
+        #                    "H", "C", "L", "LL", "M", "O", "P", "Q", "S", "sh", "U", "UU", "V", "X", "XX", "Y", "YY",
+        #                    "Z", "ZH"]
 
         pickle_in = open("x.pickle", "rb")
         train_images = pickle.load(pickle_in)
@@ -39,8 +43,8 @@ class training_data:
 
         model = tf.keras.Sequential(
             [
-                tf.keras.layers.Conv2D(60, (5, 5), activation="relu", input_shape=(28, 28, 1)),
-                tf.keras.layers.Conv2D(60, (5, 5), activation="relu"),
+                tf.keras.layers.Conv2D(64, (5, 5), activation="relu", input_shape=(28, 28, 1)),
+                tf.keras.layers.Conv2D(64, (5, 5), activation="relu"),
                 tf.keras.layers.MaxPooling2D(2, 2),
                 tf.keras.layers.Conv2D(60//2, (3, 3), activation="relu"),
                 tf.keras.layers.Conv2D(60//2, (3, 3), activation="relu"),
@@ -50,7 +54,7 @@ class training_data:
                 tf.keras.layers.Flatten(),
                 tf.keras.layers.Dense(500, activation="relu"),
                 tf.keras.layers.Dropout(0.5),
-                tf.keras.layers.Dense(8, activation="softmax")
+                tf.keras.layers.Dense(35, activation="softmax")
             ]
         )
         model.compile(
@@ -64,7 +68,7 @@ class training_data:
             train_images,
             train_labels,
             batch_size=128,
-            epochs=20,
+            epochs=10,
             verbose=1,
             validation_data=(train_images, train_labels),
             shuffle=1,

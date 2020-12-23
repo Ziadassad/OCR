@@ -8,8 +8,9 @@ from process import *
 from histogram_word_detection import *
 from tkinter import *
 import tkinter as tk
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageTk
 from matplotlib import pyplot as plt
+
 
 
 # print("Num GPUs Available: ", len(tf.config.experimental.list_physical_devices('GPU')))
@@ -19,8 +20,11 @@ from matplotlib import pyplot as plt
 #
 # training_data()
 
-CATEGORIES = ["A", "D", "KL", "R", "W", "N", "TL", "SL"]
-# CATEGORIES = ["ا", "د", "ک", "ر", "و", "ن", "ت"]
+# CATEGORIES = ["A", "D", "KL", "R", "W", "N", "TL", "SL"]
+# CATEGORIES = ["ا", "د", "ک", "ر", "و", "ن", "ت", "س"]
+
+CATEGORIES = ["ا", "ئ", "ە", "ب", "د", "ك", "ر", "ڕ", "و", "وو", "ن", "ت", "س", "چ", "ف", "گ",
+              "ه", "ج", "ل", "ڵ" "م", "ۆ", "پ", "ق", "س", "ش", "ح", "ع", "ڤ", "خ", "غ", "ی", "ێ", "ز", "ژ"]
 
 
 image = cv2.imread('train-data\\Z\\z4.png',  cv2.IMREAD_GRAYSCALE)
@@ -29,48 +33,173 @@ image2 = cv2.imread('train-data\\Y\\y3.png',  cv2.IMREAD_GRAYSCALE)
 image4 = cv2.imread('train-data\\Ztest\\C1.PNG',  cv2.IMREAD_GRAYSCALE)
 
 image5 = cv2.imread('train-data\\Ztest\\test4.png',  cv2.IMREAD_GRAYSCALE)
-image6 = cv2.imread('train-data\\Ztest\\kurdistan2.png',  cv2.IMREAD_GRAYSCALE)
+image6 = cv2.imread('train-data\\Ztest\\kurdistan.png',  cv2.IMREAD_GRAYSCALE)
 
-# re, t = cv2.threshold(image6, 127, 255, cv2.THRESH_BINARY_INV)
+re, t = cv2.threshold(image5, 127, 255, cv2.THRESH_BINARY)
 # cv2.imwrite("C:\\Users\\ZiadPro\\Desktop\\pycharm\\OCR\\train-data\\test\\kurdistan2.png", t)
 # tr
 
-ret, thresh = cv2.threshold(image6, 127, 255, cv2.THRESH_BINARY_INV)
+ret, thresh = cv2.threshold(image5, 127, 255, cv2.THRESH_BINARY_INV)
 
 
 im = thresh
 
 im = cv2.resize(im, (500, 500))
+t = cv2.resize(t, (500, 500))
 
-cv2.imshow("th", im)
+# cv2.imshow("th", t)
 
 
-detect_word = histogram_word_detection(im, "word")
-# detect_word.sparse_letter(im)
-horizontal = detect_word.Horizontal_histogram(thresh)
-
-point, imageV = detect_word.Vertical_histogram(horizontal[0])
-word_images = detect_word.getImageOfWords(point, imageV)
+# detect_word = histogram_word_detection(im, "word")
+# horizontal = detect_word.Horizontal_histogram(thresh)
+# #
+# point, imageV = detect_word.Vertical_histogram(horizontal[0])
+# word_images = detect_word.getImageOfWords(point, imageV)
 
 # cv2.imshow("rr2", horizontal[0])
 # cv2.imshow("rrr", word_images[0])
 
-i = 0
-for im in reversed(word_images):
-    # im = cv2.resize(im, (500, 500))
-    p = process(im)
-    # print(im.shape)
-    # cv2.imshow(str(i), im)
-    p.get_letter()
-    # i += 1
+# print(len(word_images))
+
+# i = 0
+# for im in reversed(word_images[0]):
+#     # im = cv2.resize(im, (500, 500))
+#     p = process(im)
+#     # print(im.shape)
+#     # cv2.imshow(str(i), im)
+#     p.get_letter()
+#     # i += 1
 
 # p = process(word_images[0])
 # p.get_letter()
 
 
-# def nothing(x):
-#     pass
-#
+model = tf.keras.models.load_model('cnn.model')
+def prepro(img):
+    img = cv2.equalizeHist(img)
+    img = img/255
+    return img
+
+cap = cv2.VideoCapture(1)
+
+root = tk.Tk()
+
+rgb = tk.Label(root)
+rgb.grid(column=1, row=0)
+image = tk.Label(root)
+image.grid(column=1, row=1)
+thresh_hold = tk.Label(root)
+thresh_hold.grid(column=2, row=0)
+
+label_one = tk.Label(root)
+label_one.grid(column=2, row=1)
+
+label_one.config(font=("Courier", 44))
+
+imgn = np.zeros((300, 300))
+img = Image.fromarray(imgn)
+img = ImageTk.PhotoImage(image=img)
+image.img = img
+image.configure(image=img)
+
+imthresh = imgn
+
+def process():
+    _, frame = cap.read()
+    imrgb = np.array(frame)
+    gray = cv2.cvtColor(imrgb, cv2.COLOR_RGB2GRAY)
+
+    # img = cv2.GaussianBlur(imrgb, (7, 7), 0)
+    # hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    # h, s, v = cv2.split(hsv)
+    # imthresh = cv2.adaptiveThreshold(v, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 11, 2)
+    ret, imthresh1 = cv2.threshold(gray, 45, 255, cv2.THRESH_BINARY_INV)
+
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (11, 11))
+    blackhat = cv2.morphologyEx(gray, cv2.MORPH_BLACKHAT, kernel)
+
+    _, thresh = cv2.threshold(blackhat, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+    imthresh = cv2.dilate(thresh, None)
+
+    bit = cv2.bitwise_or(imthresh, imthresh1)
+
+    bit = bit[20: 450, 50:620]
+
+    imthresh = cv2.resize(bit, (300, 300))
+    img = Image.fromarray(imthresh)
+    img = ImageTk.PhotoImage(image=img)
+    image.img = img
+    image.configure(image=img)
+    ret, imthresh = cv2.threshold(imthresh, 0, 255, cv2.THRESH_BINARY_INV)
+
+    cv2.imshow("ss", imthresh)
+
+
+    img = cv2.resize(imthresh, (28, 28))
+    img = prepro(img)
+    img = img.reshape(-1, 28, 28, 1)
+    predict = model.predict(img)
+    val = np.amax(predict)
+    let = CATEGORIES[int(np.argmax(predict[0]))]
+    print(let, ' ', val)
+    # print(clas, ' ', val)
+
+    cv2.putText(frame, let + "  %" + str(val), (50, 50), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 255), 1)
+    cv2.imshow("org", frame)
+
+    label_one.config(text=let + "  %" + str(val))
+
+    # detect_word = histogram_word_detection(imthresh, "word")
+    # horizontal = detect_word.Horizontal_histogram(imthresh)
+    # point, imageV = detect_word.Vertical_histogram(horizontal[0])
+    # word_images = detect_word.getImageOfWords(point, imageV)
+
+def video_stream():
+    _, frame = cap.read()
+    imrgb = np.array(frame)
+    imrgb = cv2.cvtColor(imrgb, cv2.COLOR_BGR2RGB)
+    gray = cv2.cvtColor(imrgb, cv2.COLOR_RGB2GRAY)
+    # print(imrgb.shape)
+    ret, imthresh1 = cv2.threshold(gray, 45, 255, cv2.THRESH_BINARY_INV)
+
+    # imrgb = cv2.GaussianBlur(imrgb, (7, 7), 0)
+    # hsv = cv2.cvtColor(imrgb, cv2.COLOR_BGR2HSV)
+    # h, s, v = cv2.split(hsv)
+    # imthreshAd = cv2.adaptiveThreshold(v, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 11, 2)
+    # imthresh = imthresh[120: 350, 190:450]
+    # imthresh = cv2.resize(imthresh, (500, 500))
+
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (11, 11))
+    blackhat = cv2.morphologyEx(gray, cv2.MORPH_BLACKHAT, kernel)
+
+    _, thresh = cv2.threshold(blackhat, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+    imthresh = cv2.dilate(thresh, None)
+
+    bit = cv2.bitwise_or(imthresh, imthresh1)
+
+    bit = bit[20: 450, 50:620]
+
+    img = Image.fromarray(imrgb)
+    imgtkrgb = ImageTk.PhotoImage(image=img)
+
+    imgt = Image.fromarray(bit)
+    imgtkth = ImageTk.PhotoImage(image=imgt)
+
+    rgb.imgtkgray = imgtkrgb
+    rgb.configure(image=imgtkrgb)
+
+    thresh_hold.imgtkth = imgtkth
+    thresh_hold.configure(image=imgtkth)
+
+    root.after(10, video_stream)
+
+
+video_stream()
+
+button = tk.Button(root, text='Save image', width=20, command=process).grid(column=1, row=2)
+tk.mainloop()
+
+
 # cv2.namedWindow("Tracking")
 # cv2.createTrackbar("LH", "Tracking", 0, 255, nothing)
 # cv2.createTrackbar("LS", "Tracking", 0, 255, nothing)
@@ -78,26 +207,24 @@ for im in reversed(word_images):
 # cv2.createTrackbar("UH", "Tracking", 255, 255, nothing)
 # cv2.createTrackbar("US", "Tracking", 255, 255, nothing)
 # cv2.createTrackbar("UV", "Tracking", 255, 255, nothing)
-#
-# model = tf.keras.models.load_model('cnn.model')
-# def prepro(img):
-#     # img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-#     img = cv2.equalizeHist(img)
-#     img = img/255
-#     return img
-#
-# cap = cv2.VideoCapture(0)
-#
+
 # while True:
 #     _, frame = cap.read()
 #     frame = np.array(frame)
-#     # cv2.imshow("org", frame)
-#     # img = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-#     # cv2.imshow("gray", img)
-#     # ret, img = cv2.threshold(img, 120, 205, cv2.THRESH_BINARY_INV)
-#     # cv2.imshow("thrsh", img)
-#     # img = cv2.resize(img, (28, 28))
-#     # img = prepro(img)
+#     cv2.imshow("org", frame)
+#     img = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+#     # print(img.shape)
+#     cv2.imshow("gray", img)
+#     ret, img = cv2.threshold(img, 45, 255, cv2.THRESH_BINARY_INV)
+#     cv2.imshow("thrsh", img)
+#     img = cv2.resize(img, (28, 28))
+#     img = prepro(img)
+#
+#     # img = cv2.medianBlur(img, 5)
+#
+#     # ret, th1 = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
+#     # th2 = cv2.adaptiveThreshold(img, 205, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 11, 2)
+#     # th3 = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 115, 2)
 #
 #     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 #
@@ -114,24 +241,25 @@ for im in reversed(word_images):
 #
 #     mask = cv2.inRange(hsv, l_b, u_b)
 #
-#     res = cv2.bitwise_and(frame, frame, mask=mask)
+#     mask = img[70:400, 70:560]
+#
+#     # res = cv2.bitwise_and(frame, frame, mask=mask)
+#     # cv2.imshow("res", res)
 #
 #     # cv2.imshow("frame", frame)
-#     cv2.imshow("mask", mask)
-#     cv2.imshow("res", res)
+#     # cv2.imshow("mask", mask)
 #
-#     img = cv2.resize(mask, (28, 28))
-#     img = prepro(img)
-#     img = img.reshape(-1, 28, 28, 1)
-#     # clas = int(model.predict_classes(img))
-#     predict = model.predict(img)
-#     val = np.amax(predict)
-#     let = CATEGORIES[int(np.argmax(predict[0]))]
-#     print(let, ' ', val)
-#     # print(clas, ' ', val)
-#
-#     cv2.putText(frame, let + "  %" + str(val), (50, 50), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 255), 1)
-#     cv2.imshow("org", frame)
+#     # img = cv2.resize(mask, (28, 28))
+#     # img = prepro(img)
+#     # img = img.reshape(-1, 28, 28, 1)
+#     # predict = model.predict(img)
+#     # val = np.amax(predict)
+#     # let = CATEGORIES[int(np.argmax(predict[0]))]
+#     # print(let, ' ', val)
+#     # # print(clas, ' ', val)
+#     #
+#     # cv2.putText(frame, let + "  %" + str(val), (50, 50), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 255), 1)
+#     # cv2.imshow("org", frame)
 #     cv2.waitKey(1)
 #     if cv2.waitKey(1) & 0xFF == ord('q'):
 #         break
