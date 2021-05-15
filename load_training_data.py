@@ -11,12 +11,11 @@ class load_training_data:
         # self.CATEGORIES = ["Z", "Y", "M", "S", "D", "A", "Aa", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
         # self.CATEGORIES = ["A", "D", "KL", "R", "W", "N", "TL", "SL"]
 
-        self.CATEGORIES = ["A", "AL", "AC", "B", "D", "KS", "R", "RR", "W", "WW", "N", "TS", "S", "CH", "F", "G",
-         "H", "C", "L", "LL", "M", "O", "P", "Q", "S", "sh", "U", "UU", "V", "X", "XX", "Y", "YY", "Z", "ZH"]
+        self.CATEGORIES = ["A", "AL", "AC", "B", "D", "KS", "R", "RR", "W", "WW", "N", "TS", "CH", "F", "G",
+                           "H", "C", "L", "LL", "M", "O", "P", "Q", "S", "sh", "U", "UU", "V", "X", "XX", "Y", "YY", "Z", "ZH",
+                           "KW", "STA"]
 
-        # self.CATEGORIES = ["A", "AL", "AC", "B", "D", "KS", "R", "RR", "W"]
-
-
+        print(len(self.CATEGORIES))
     def load_image(self):
 
         fig = plot.figure()
@@ -26,9 +25,9 @@ class load_training_data:
         dir = self.DATADIR
         catog = self.CATEGORIES
         for category in catog:
-            # print(category)
+            print(category)
             class_name = catog.index(category)
-            # print(class_name)
+            print(class_name)
             path = os.path.join(dir, category)
             # length = os.listdir(path)
             # print(len(length))

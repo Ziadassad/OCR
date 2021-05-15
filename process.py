@@ -1,20 +1,15 @@
 import cv2
-from load_training_data import *
 from training_data import *
 from histogram_word_detection import *
 from PIL import Image, ImageFilter
 
 
 class process:
-
     def __init__(self, image):
-        # "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"
-        # ["A", "AL", "AC", "B", "D", "KL", "R", "RR", "W", "WW", "N", "TS", "TL", "SL", "CH", "F", "G",
-        #  "H", "C", "L", "LL", "M", "O", "P", "Q", "S", "SL", "sh", "U", "UU", "V", "X", "XX", "Y", "YY",
-        #  "Z", "ZH"]
-        self.CATEGORIES = ["ا", "ئ", "ە", "ب", "د", "ك", "ر", "ڕ", "و", "وو", "ن", "ت", "س", "چ", "ف", "گ",
-                           "ه", "ج", "ل", "ڵ" "م", "ۆ", "پ", "ق", "س", "ش", "ح", "ع", "ڤ", "خ", "غ", "ی", "ێ", "ز", "ژ"]
-        # self.CATEGORIES = ["ا", "د", "ک", "ر", "و", "ن", "ت", "س"]
+        self.CATEGORIES = ["ا", "ئ", "ە", "ب", "د", "ك", "ر", "ڕ", "و", "وو", "ن", "ت", "چ", "ف", "گ",
+                      "ه", "ج", "ل", "ڵ", "م", "ۆ", "پ", "ق", "س", "ش", "ح", "ع", "ڤ", "خ", "غ", "ی", "ێ", "ز", "ژ",
+                      "کو", "ستا"]
+
         self.image = image
         self.words = []
         # cv2.imshow('d', image)
@@ -36,14 +31,16 @@ class process:
             # cv2.imshow(str(i), im)
             # i += 1
 
-
+    f = 0.000001
     # model = tf.keras.models.load_model('cnn.model')
 
     def predict(self, p):
         model = tf.keras.models.load_model('cnn.model')
         prediction = model.predict([p])
         letter = self.CATEGORIES[int(np.argmax(prediction[0]))]
-        print(letter)
+        val = np.amax(prediction)
+        print(letter, " ", val - self.f)
+        self.f += 0.00001
         return letter
 
 
@@ -73,16 +70,20 @@ class process:
             return new.reshape(-1, 28, 28, 1)
 
         # self.findLettercon()
-        letter = ""
+        letter = []
         i = 0
         for w in self.word:
             ret, image = cv2.threshold(w, 0, 255, cv2.THRESH_BINARY)
-            print(w.shape)
+            # print(w.shape)
             # cv2.imshow(str(i), image)
             # print(w.shape)
 
             p = preper(image, i)
-            letter = letter + self.predict(p)
+            letter.append(self.predict(p))
             i += 1
 
-        print(letter[::-1], end=" ")
+        # print(letter)
+        separator = ''
+        result = separator.join(letter[::-1])
+        print(result, end=" ")
+        return result

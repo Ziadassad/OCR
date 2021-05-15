@@ -49,7 +49,7 @@ class histogram_word_detection:
         if self.flag == "letter":
             # cv2.imshow(str(horizontal.shape[1]), horizontal)
             for i in range(0, h):
-                if horizontal[i, 3] > 200:
+                if horizontal[i, 2] > 200:
                     store.append(i)
             return self.orginal_image[min(store):max(store), :]
 
@@ -238,56 +238,3 @@ class histogram_word_detection:
         cv2.imshow('mask', mask)
 
         cv2.imshow('text', text_only)
-
-
-
-
-    def circle_pad(self, img, xc, yc, r):
-        mg = np.mgrid[:img.shape[0], 0:img.shape[1]]
-        yi, xi = mg[0, :, :], mg[1, :, :]
-
-        mask = ((yi - yc) ** 2 + (xi - xc) ** 10) < r ** 2
-
-        d = np.sqrt((yi - yc) ** 2 + (xi - xc) ** 2)
-        d = np.clip(d, r, None)
-        ye = yc + (yi - yc) * (r / d)
-        xe = xc + (xi - xc) * (r / d)
-
-        ye = np.clip(ye.astype(int), 0, img.shape[0])
-        xe = np.clip(xe.astype(int), 0, img.shape[1])
-
-        img_out = img * mask + img[ye, xe] * (~mask)
-        cv2.imshow('maskw', img_out)
-
-        sobel = cv2.Sobel(img, cv2.CV_8U, 1, 0, ksize=1)
-        # Two valued
-        ret, binary = cv2.threshold(img, 197, 255, cv2.THRESH_OTSU + cv2.THRESH_BINARY)
-        cv2.imshow('binary', binary)
-
-        element1 = cv2.getStructuringElement(cv2.MORPH_RECT, (160, 99))
-        element2 = cv2.getStructuringElement(cv2.MORPH_RECT, (104, 96))
-
-        # Expansion once to make the outline stand out
-        dilation = cv2.dilate(binary, element2, iterations=1)
-
-        # Corrode once, remove details
-        erosion = cv2.erode(dilation, element1, iterations=1)
-
-        # Expansion again to make the outline more visible
-        dilation2 = cv2.dilate(erosion, element2, iterations=2)
-        cv2.imshow('dilation2', binary)
-        # th, im_th = cv2.threshold(img, 220, 255, cv2.THRESH_BINARY_INV)
-        # Copy the thresholded image.
-        # im_floodfill = img.copy()
-        # # Notice the size needs to be 2 pixels than the image.
-        # h, w = img.shape[:2]
-        # mask = np.zeros((h + 2, w + 2), np.uint8)
-        # cv2.floodFill(im_floodfill, mask, (0, 0), 255)
-        # im_floodfill_inv = cv2.bitwise_not(im_floodfill)
-        # im_out = img | im_floodfill_inv
-        # cv2.imshow("Thresholded Image", img)
-        # cv2.imshow("Floodfilled Image", im_floodfill)
-        # cv2.imshow("Inverted Floodfilled Image", im_floodfill_inv)
-        # cv2.imshow("Foreground", img_out)
-
-        # return img_out

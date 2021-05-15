@@ -20,11 +20,9 @@ from matplotlib import pyplot as plt
 #
 # training_data()
 
-# CATEGORIES = ["A", "D", "KL", "R", "W", "N", "TL", "SL"]
-# CATEGORIES = ["ا", "د", "ک", "ر", "و", "ن", "ت", "س"]
 
-CATEGORIES = ["ا", "ئ", "ە", "ب", "د", "ك", "ر", "ڕ", "و", "وو", "ن", "ت", "س", "چ", "ف", "گ",
-              "ه", "ج", "ل", "ڵ" "م", "ۆ", "پ", "ق", "س", "ش", "ح", "ع", "ڤ", "خ", "غ", "ی", "ێ", "ز", "ژ"]
+CATEGORIES = ["ا", "ئ", "ە", "ب", "د", "ك", "ر", "ڕ", "و", "وو", "ن", "ت", "چ", "ف", "گ",
+              "ه", "ج", "ل", "ڵ", "م", "ۆ", "پ", "ق", "س", "ش", "ح", "ع", "ڤ", "خ", "غ", "ی", "ێ", "ز", "ژ", "کو", "ستا"]
 
 
 image = cv2.imread('train-data\\Z\\z4.png',  cv2.IMREAD_GRAYSCALE)
@@ -47,12 +45,9 @@ im = thresh
 im = cv2.resize(im, (500, 500))
 t = cv2.resize(t, (500, 500))
 
-# cv2.imshow("th", t)
-
 
 # detect_word = histogram_word_detection(im, "word")
 # horizontal = detect_word.Horizontal_histogram(thresh)
-# #
 # point, imageV = detect_word.Vertical_histogram(horizontal[0])
 # word_images = detect_word.getImageOfWords(point, imageV)
 
@@ -70,8 +65,10 @@ t = cv2.resize(t, (500, 500))
 #     p.get_letter()
 #     # i += 1
 
-# p = process(word_images[0])
+# p = process(image)
 # p.get_letter()
+
+
 
 
 model = tf.keras.models.load_model('cnn.model')
@@ -104,55 +101,53 @@ image.configure(image=img)
 
 imthresh = imgn
 
-def process():
+def proces():
     _, frame = cap.read()
     imrgb = np.array(frame)
     gray = cv2.cvtColor(imrgb, cv2.COLOR_RGB2GRAY)
 
-    # img = cv2.GaussianBlur(imrgb, (7, 7), 0)
+    gray = cv2.GaussianBlur(gray, (7, 7), 0)
     # hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     # h, s, v = cv2.split(hsv)
     # imthresh = cv2.adaptiveThreshold(v, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 11, 2)
     ret, imthresh1 = cv2.threshold(gray, 45, 255, cv2.THRESH_BINARY_INV)
 
-    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (11, 11))
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (9, 9))
     blackhat = cv2.morphologyEx(gray, cv2.MORPH_BLACKHAT, kernel)
 
-    _, thresh = cv2.threshold(blackhat, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
-    imthresh = cv2.dilate(thresh, None)
+    _, imthresh = cv2.threshold(blackhat, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+    # imthresh = cv2.dilate(thresh, None)
 
     bit = cv2.bitwise_or(imthresh, imthresh1)
 
     bit = bit[20: 450, 50:620]
 
-    imthresh = cv2.resize(bit, (300, 300))
+    imthresh = cv2.resize(bit, (500, 500))
     img = Image.fromarray(imthresh)
     img = ImageTk.PhotoImage(image=img)
     image.img = img
     image.configure(image=img)
+
     ret, imthresh = cv2.threshold(imthresh, 0, 255, cv2.THRESH_BINARY_INV)
 
-    cv2.imshow("ss", imthresh)
+    detect_word = histogram_word_detection(imthresh, "word")
+    horizontal = detect_word.Horizontal_histogram(imthresh)
+    point, imageV = detect_word.Vertical_histogram(horizontal[0])
+    word_images = detect_word.getImageOfWords(point, imageV)
 
+    # i = 0
+    # for im in reversed(word_images[0]):
+    #     im = cv2.resize(im, (500, 500))
+    #     p = process(im)
+    #     print(im.shape)
+    #     # cv2.imshow(str(i), im)
+    #     p.get_letter()
+    #     i += 1
 
-    img = cv2.resize(imthresh, (28, 28))
-    img = prepro(img)
-    img = img.reshape(-1, 28, 28, 1)
-    predict = model.predict(img)
-    val = np.amax(predict)
-    let = CATEGORIES[int(np.argmax(predict[0]))]
-    print(let, ' ', val)
-    # print(clas, ' ', val)
+    p = process(word_images[0])
+    result = p.get_letter()
 
-    cv2.putText(frame, let + "  %" + str(val), (50, 50), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 255), 1)
-    cv2.imshow("org", frame)
-
-    label_one.config(text=let + "  %" + str(val))
-
-    # detect_word = histogram_word_detection(imthresh, "word")
-    # horizontal = detect_word.Horizontal_histogram(imthresh)
-    # point, imageV = detect_word.Vertical_histogram(horizontal[0])
-    # word_images = detect_word.getImageOfWords(point, imageV)
+    label_one.config(text=result)
 
 def video_stream():
     _, frame = cap.read()
@@ -169,12 +164,12 @@ def video_stream():
     # imthresh = imthresh[120: 350, 190:450]
     # imthresh = cv2.resize(imthresh, (500, 500))
 
+    gray = cv2.GaussianBlur(gray, (7, 7), 0)
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (11, 11))
     blackhat = cv2.morphologyEx(gray, cv2.MORPH_BLACKHAT, kernel)
 
-    _, thresh = cv2.threshold(blackhat, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
-    imthresh = cv2.dilate(thresh, None)
-
+    _, imthresh = cv2.threshold(blackhat, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+    # imthresh = cv2.dilate(imthresh, None)
     bit = cv2.bitwise_or(imthresh, imthresh1)
 
     bit = bit[20: 450, 50:620]
@@ -196,7 +191,7 @@ def video_stream():
 
 video_stream()
 
-button = tk.Button(root, text='Save image', width=20, command=process).grid(column=1, row=2)
+button = tk.Button(root, text='Save image', width=20, command=proces).grid(column=1, row=2)
 tk.mainloop()
 
 

@@ -18,9 +18,9 @@ class training_data:
         # CATEGORIES = ["Z", "Y", "S", "D", "A", "Aa", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
         # CATEGORIES = ["A", "D", "KL", "R", "W", "N", "TL", "SL"]
 
-        # self.CATEGORIES = ["A", "AL", "AC", "B", "D", "KS", "R", "RR", "W", "WW", "N", "TS", "S", "CH", "F", "G",
-        #                    "H", "C", "L", "LL", "M", "O", "P", "Q", "S", "sh", "U", "UU", "V", "X", "XX", "Y", "YY",
-        #                    "Z", "ZH"]
+        self.CATEGORIES = ["A", "AL", "AC", "B", "D", "KS", "R", "RR", "W", "WW", "N", "TS", "CH", "F", "G",
+                           "H", "C", "L", "LL", "M", "O", "P", "Q", "S", "sh", "U", "UU", "V", "X", "XX", "Y", "YY",
+                           "Z", "ZH", "KW", "STA"]
 
         pickle_in = open("x.pickle", "rb")
         train_images = pickle.load(pickle_in)
@@ -54,7 +54,7 @@ class training_data:
                 tf.keras.layers.Flatten(),
                 tf.keras.layers.Dense(500, activation="relu"),
                 tf.keras.layers.Dropout(0.5),
-                tf.keras.layers.Dense(35, activation="softmax")
+                tf.keras.layers.Dense(36, activation="softmax")
             ]
         )
         model.compile(
@@ -64,16 +64,7 @@ class training_data:
 
         start = time.time()
 
-        model.fit(
-            train_images,
-            train_labels,
-            batch_size=128,
-            epochs=10,
-            verbose=1,
-            validation_data=(train_images, train_labels),
-            shuffle=1,
-            callbacks=[],
-        )
+        model.fit(train_images, train_labels, batch_size=128, epochs=10, verbose=1, validation_data=(train_images, train_labels), shuffle=1, callbacks=[])
         stop = time.time()
         print("Training time:", stop - start, "seconds")
 
