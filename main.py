@@ -13,6 +13,7 @@ from matplotlib import pyplot as plt
 
 
 
+
 # print("Num GPUs Available: ", len(tf.config.experimental.list_physical_devices('GPU')))
 
 # a = load_training_data()
