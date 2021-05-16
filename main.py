@@ -106,13 +106,15 @@ def proces():
     imrgb = np.array(frame)
     gray = cv2.cvtColor(imrgb, cv2.COLOR_RGB2GRAY)
 
-    gray = cv2.GaussianBlur(gray, (7, 7), 0)
     # hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     # h, s, v = cv2.split(hsv)
     # imthresh = cv2.adaptiveThreshold(v, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 11, 2)
+
+
     ret, imthresh1 = cv2.threshold(gray, 45, 255, cv2.THRESH_BINARY_INV)
 
-    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (9, 9))
+    gray = cv2.GaussianBlur(gray, (5, 5), 0)
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (7, 7))
     blackhat = cv2.morphologyEx(gray, cv2.MORPH_BLACKHAT, kernel)
 
     _, imthresh = cv2.threshold(blackhat, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
@@ -120,9 +122,11 @@ def proces():
 
     bit = cv2.bitwise_or(imthresh, imthresh1)
 
-    bit = bit[20: 450, 50:620]
+    erode = cv2.erode(bit, None, iterations=1)
 
-    imthresh = cv2.resize(bit, (500, 500))
+    erode = erode[20: 450, 50:620]
+
+    imthresh = cv2.resize(erode, (500, 500))
     img = Image.fromarray(imthresh)
     img = ImageTk.PhotoImage(image=img)
     image.img = img
@@ -164,20 +168,23 @@ def video_stream():
     # imthresh = imthresh[120: 350, 190:450]
     # imthresh = cv2.resize(imthresh, (500, 500))
 
-    gray = cv2.GaussianBlur(gray, (7, 7), 0)
-    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (11, 11))
+    gray = cv2.GaussianBlur(gray, (5, 5), 0)
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (7, 7))
     blackhat = cv2.morphologyEx(gray, cv2.MORPH_BLACKHAT, kernel)
 
     _, imthresh = cv2.threshold(blackhat, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
     # imthresh = cv2.dilate(imthresh, None)
     bit = cv2.bitwise_or(imthresh, imthresh1)
 
-    bit = bit[20: 450, 50:620]
+    erode = cv2.erode(bit, None, iterations=1)
+
+    erode = erode[20: 450, 50:620]
+
 
     img = Image.fromarray(imrgb)
     imgtkrgb = ImageTk.PhotoImage(image=img)
 
-    imgt = Image.fromarray(bit)
+    imgt = Image.fromarray(erode)
     imgtkth = ImageTk.PhotoImage(image=imgt)
 
     rgb.imgtkgray = imgtkrgb
