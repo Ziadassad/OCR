@@ -214,7 +214,7 @@ class histogram_word_detection:
             img = image[:, w1: w2]
             images.append(img)
 
-        cv2.imshow("wo", image[1])
+        # cv2.imshow("wo", image[1])
 
         return images
 

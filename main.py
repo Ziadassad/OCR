@@ -32,7 +32,7 @@ image2 = cv2.imread('train-data\\Y\\y3.png',  cv2.IMREAD_GRAYSCALE)
 image4 = cv2.imread('train-data\\Ztest\\C1.PNG',  cv2.IMREAD_GRAYSCALE)
 
 image5 = cv2.imread('train-data\\Ztest\\test4.png',  cv2.IMREAD_GRAYSCALE)
-image6 = cv2.imread('train-data\\Ztest\\kurdistan.png',  cv2.IMREAD_GRAYSCALE)
+image6 = cv2.imread('train-data\\Ztest\\kurdistan2.png',  cv2.IMREAD_GRAYSCALE)
 
 re, t = cv2.threshold(image5, 127, 255, cv2.THRESH_BINARY)
 # cv2.imwrite("C:\\Users\\ZiadPro\\Desktop\\pycharm\\OCR\\train-data\\test\\kurdistan2.png", t)
@@ -49,12 +49,12 @@ t = cv2.resize(t, (500, 500))
 
 # detect_word = histogram_word_detection(im, "word")
 # horizontal = detect_word.Horizontal_histogram(thresh)
-# point, imageV = detect_word.Vertical_histogram(horizontal[0])
+# point, imageV = detect_word.Vertical_histogram(horizontal[1])
 # word_images = detect_word.getImageOfWords(point, imageV)
 
-# cv2.imshow("rr2", horizontal[0])
+# cv2.imshow("rr2", im)
 # cv2.imshow("rrr", word_images[0])
-
+#
 # print(len(word_images))
 
 # i = 0
@@ -66,8 +66,10 @@ t = cv2.resize(t, (500, 500))
 #     p.get_letter()
 #     # i += 1
 
-# p = process(image)
+# p = process(word_images[0])
 # p.get_letter()
+
+
 
 
 
@@ -92,7 +94,7 @@ thresh_hold.grid(column=2, row=0)
 label_one = tk.Label(root)
 label_one.grid(column=2, row=1)
 
-label_one.config(font=("Courier", 44))
+label_one.config(font=("Courier", 30))
 
 imgn = np.zeros((300, 300))
 img = Image.fromarray(imgn)
@@ -128,29 +130,35 @@ def proces():
     erode = erode[20: 450, 50:620]
 
     imthresh = cv2.resize(erode, (500, 500))
-    img = Image.fromarray(imthresh)
+    img = Image.fromarray(cv2.resize(imthresh, (200, 200)))
     img = ImageTk.PhotoImage(image=img)
     image.img = img
     image.configure(image=img)
 
     ret, imthresh = cv2.threshold(imthresh, 0, 255, cv2.THRESH_BINARY_INV)
-
     detect_word = histogram_word_detection(imthresh, "word")
     horizontal = detect_word.Horizontal_histogram(imthresh)
-    point, imageV = detect_word.Vertical_histogram(horizontal[0])
-    word_images = detect_word.getImageOfWords(point, imageV)
 
-    # i = 0
-    # for im in reversed(word_images[0]):
-    #     im = cv2.resize(im, (500, 500))
-    #     p = process(im)
-    #     print(im.shape)
-    #     # cv2.imshow(str(i), im)
-    #     p.get_letter()
-    #     i += 1
+    cv2.imshow("sh", horizontal[0])
 
-    p = process(word_images[0])
-    result = p.get_letter()
+    result = ""
+    i = 0
+    for row in horizontal:
+        point, imageV = detect_word.Vertical_histogram(row)
+        word_images = detect_word.getImageOfWords(point, imageV)
+        for im in reversed(word_images):
+            # im = cv2.resize(im, (500, 500))
+            p = process(im)
+            print(im.shape)
+            # cv2.imshow(str(i), im)
+            result += p.get_letter() + ' '
+            i += 1
+        result += "\n"
+
+    horizontal.clear()
+    word_images.clear()
+    # p = process(word_images[0])
+    # result = p.get_letter()
 
     label_one.config(text=result)
 
